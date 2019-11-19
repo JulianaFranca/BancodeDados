@@ -1,0 +1,20 @@
+create table alunos.Barcos
+(id_barco integer,
+nome_barco varchar(20),
+cor varchar(15),
+primary key (id_barco))
+
+create table alunos.Marinheiros
+(id_marin integer,
+nome_marin varchar(20),
+avaliacao integer,
+idade real,
+primary key (id_marin))
+
+create table alunos.Reservas
+(id_marin integer,
+id_barco integer,
+dia date,
+primary key (id_marin, id_barco,dia),
+foreign key (id_marin) references alunos.Marinheiros (id_marin),
+foreign key (id_barco) references alunos.Barcos (id_barco))
