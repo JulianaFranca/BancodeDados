@@ -1,0 +1,3 @@
+select m.nome from marinheiros m
+where m.id_marin in (select r.id_marin from reserva r				
+where r.id_barco=103)
