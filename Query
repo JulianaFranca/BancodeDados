@@ -1,0 +1,62 @@
+select m.id_marin,m.nome_marin from alunos.marinheiros m
+except 
+select m.id_marin, m.nome_marin from alunos.marinheiros m, alunos.reservas r
+
+select * from alunos.marinheiros
+order by idade asc
+
+select * from alunos.marinheiros
+order by nome_marin asc
+
+select * from alunos.marinheiros
+order by nome_marin desc
+
+select * from alunos.marinheiros
+order by avaliacao asc, nome_marin desc
+
+select * from alunos.marinheiros
+order by nome_marin asc
+
+select * from alunos.marinheiros
+order by nome_marin desc
+
+select * from alunos.marinheiros
+order by nome_marin, avaliacao asc
+
+select * from alunos.marinheiros
+order by nome_marin, avaliacao desc
+
+select * from alunos.empregado
+select sum(salario) from alunos.empregado
+
+select max(salario)as salario_maximo from alunos.empregado
+
+select e.nome from alunos.empregado e 
+where e.salario=(select max(salario) from alunos.empregado)
+
+select max(salario)as salario_maximo from alunos.empregado
+
+select e.nome from alunos.empregado e 
+where e.salario=(select min(salario) from alunos.empregado)
+
+select e.nome from alunos.empregado e
+where e.salario >(select avg(salario) from empregado)
+
+select * from alunos.marinheiros
+
+select m.nome_marin from alunos.marinheiros m
+
+select max (idade) from alunos.marinheiros m
+
+select m.nome_marin from alunos.marinheiros m
+where m.idade= (select max (idade) from alunos.marinheiros )
+
+select m.nome_marin from alunos.marinheiros m
+where m.idade= (select min (idade) from alunos.marinheiros )
+
+select * from alunos.empregado
+
+select count (*)
+from alunos.empregado e
+where e.salario > (select avg(salario) from alunos.empregado)
+select avg(salario) from empregado
