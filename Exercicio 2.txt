@@ -1,0 +1,375 @@
+************ CRIANDO TABELAS ***************
+
+create table Empregado(
+Enome varchar(80),
+CPF int,
+Endereço varchar(100),
+Nasc date,
+Sexo varchar(10),
+Salário real,
+Chefe int,
+Cdep int,
+primary key(CPF)
+	)
+
+create table Departamento(
+Dnome varchar(80),
+Codigo int,
+Gerente int,
+primary key (Codigo)	
+	)
+
+create table Projeto(
+Pnome varchar(80),
+PCodigo varchar(50),
+Cidade varchar(80),
+Cdep integer,	
+primary key (PCodigo),
+FOREIGN KEY (Cdep) REFERENCES Departamento (Codigo))
+
+
+ALTER TABLE Empregado ADD FOREIGN KEY (Cdep) REFERENCES Departamento (Codigo)
+
+
+create table DUnidade(
+DCodigo int,
+DCidade varchar(50),
+primary key (DCidade),
+FOREIGN KEY (DCodigo) REFERENCES Departamento (Codigo)	
+)
+
+
+create table Tarefa(
+CPF int,
+PCodigo varchar(50),
+Horas real,
+PRIMARY KEY (CPF, PCodigo),
+FOREIGN KEY (CPF) REFERENCES Empregado (CPF),	
+FOREIGN KEY (PCodigo) REFERENCES Projeto (PCodigo)
+)
+
+
+
+
+************ POVOANDO ***************
+
+Insert into Empregado values
+('Chiquin',1234,'rua 1,1','02/02/62','M',10000.00,8765,3),
+('Helenita', 4321 ,'rua 2,2','03/03/63','F',12000.00,6543,2),
+('Pedrin',5678,'rua 3,3','04/04/64','M',9000.00,6543,2),
+('Valtin',8765,'rua 4,4','05/05/65','M',15000.00,Null,4),
+('Zulmira',3456,'rua 5,5','06/06/66','F',12000.00,8765,3),
+('Zefinha',6543,'rua 6,6','07/07/67','F',10000.00,8765,2)
+
+insert into Departamento values
+('Pesquisa',3,1234),
+('Marketing',2,6543),
+('Administração',4,8765)
+
+insert into Projeto values
+('ProdutoA','PA','Cumbuco',3),
+('ProdutoB','PB','Icapuí',3),
+('Informatização','Inf','Fortaleza',4),
+('Divulgação','Div','Morro Branco',2)
+
+insert into DUnidade values
+(2,'Morro Branco'),
+(3,'Cumbuco'),
+(3,'Prainha'),
+(3,'Taíba'),
+(3,'Icapuí'),
+(4,'Fortaleza')
+
+insert into Tarefa values
+(1234,'PA',30.0),
+(1234,'PB',10.0),
+(4321,'PA',5.0),
+(4321,'Div',35.0),
+(5678,'Div',40.0),
+(8765,'Inf',32.0),
+(8765,'Div',8.0),
+(3456,'PA',10.0),
+(3456,'PB',25.0),
+(3456,'Div',5.0),
+(6543,'PB',40.0)
+
+
+
+
+*********************Lista 1*************************
+1) Recupere o nome e o salário de todos os empregados. 
+select E.enome, E.salário
+from empregado E
+
+2) Recupere o nome e o salário de todos os empregados do sexo feminino. 
+select E.enome, E.salário
+from empregado E 
+where sexo='F'
+
+3) Recupere o nome e o salário de todos os empregados do sexo feminino e que ganham salário maior que R$ 10.000,00. 
+select E.enome, E.salário
+from empregado E 
+where sexo='F' and salário>10000
+
+4) Recupere a quantidade de empregados. 
+select MAX(E.salário), MIN(E.salário), AVG (E.salário)
+from empregado E
+
+5) Recupere o maior salário, o menor salário e a média salarial da empresa. 
+select MAX(E.salário), MIN(E.salário), AVG (E.salário)
+from empregado E
+
+6) Recupere o nome e o salário de todos os empregados que trabalham em Marketing. 
+select E.enome, E.salário
+from empregado E, departamento D
+where E.cdep=D.codigo and D.codigo=2
+
+7) Recupere o CPF dos empregados que possuem alguma tarefa. 
+select distinct E.cpf
+from empregado E, tarefa T
+where E.cpf=T.cpf
+
+8) Recupere o CPF dos empregados que não possuem tarefa. 
+select E.cpf
+from empregado E
+except
+select distinct T.cpf
+from tarefa T
+
+9) Recupere o nome dos empregados que possuem alguma tarefa. 
+select E.enome 
+from empregado E
+where exists
+(select E.enome
+ from tarefa T
+
+
+10) Recupere o nome dos empregados que não possuem tarefa. 
+select E.enome 
+from empregado E
+where not exists
+(select E.enome
+ from tarefa T
+where E.cpf=T.cpf)
+
+
+11) Recupere o CPF dos empregados que possuem pelo menos uma tarefa com mais de 30 horas. 
+select E.cpf
+from empregado E, tarefa T
+where E.cpf=T.cpf and T.horas>30
+
+
+12) Recupere o nome dos empregados que possuem pelo menos uma tarefa com mais de 30 horas. 
+SELECT DISTINCT E.ENOME 
+FROM EMPREGADO E, TAREFA T
+WHERE (E.CPF=T.CPF) AND T.HORAS>30
+
+13) Recupere para cada departamento o seu nome e o nome do seu gerente. 
+SELECT D.DNOME, E.ENOME 
+FROM DEPARTAMENTO D, EMPREGADO E
+WHERE D.GERENTE=E.CPF
+
+14) Recupere o CPF de todos os empregados que trabalham em Pesquisa ou que diretamente gerenciam um empregado que trabalha em Pesquisa. 
+SELECT E.CPF
+FROM EMPREGADO E
+WHERE E.CDEP=2
+union
+SELECT E1.CPF
+FROM EMPREGADO E1, Departamento D
+WHERE D.codigo=2 and E1.cpf=D.gerente
+
+
+15) Recupere o nome e a cidade dos projetos que envolvem (contêm) pelo menos um empregado que trabalha mais de 30 horas nesse projeto. 
+SELECT DISTINCT P.PNOME, P.CIDADE 
+FROM PROJETO P, TAREFA T
+WHERE P.PCODIGO=T.PCODIGO
+AND T.HORAS>30
+
+16) Recupere o nome e a data de nascimento dos gerentes de cada departamento. 
+SELECT E.NOME, E.NASC 
+FROM EMPREGADO E, DEPARTAMENTO D
+WHERE E.CPF=D.GERENTE
+
+17) Recupere o nome e o endereço de todos os empregados que trabalham para o departamento “Pesquisa”. 
+SELECT E.enome, E.endereço
+FROM EMPREGADO E
+WHERE E.CDEP=3
+
+18) Para cada projeto localizado em Icapuí, recupere o código do projeto, o nome do departamento que o controla e o nome do seu gerente. 
+SELECT E.ENOME, D.DNOME, P.PCODIGO
+FROM EMPREGADO E, DEPARTAMENTO D, PROJETO P
+WHERE P.CIDADE='Icapuí'AND P.CDEP=D.CODIGO
+AND D.GERENTE=E.CPF
+
+19) Recupere o nome e o sexo dos empregados que são gerentes. 
+select E.enome, E.sexo
+from empregado E, Departamento D
+where E.cpf=D.gerente
+
+20) Recupere o nome e o sexo dos empregados que não são gerentes. 
+select E.enome, E.sexo
+from empregado E
+except
+select E.enome, E.sexo
+from empregado E, Departamento D
+where E.cpf=D.gerente
+
+
+Lista 2
+1. Recuperar para cada departamento: o seu nome, o maior e o menor salário recebido por empregados do departamento e a média salarial do departamento. 
+select D.dnome, Max(E.salário), Min(E.salário), AVG(E.salário)
+from empregado E, departamento D
+where E.cdep=D.codigo
+group by (D.dnome)
+
+2. Recuperar o nome do departamento com maior média salarial. 
+select d.dnome
+	from empregado e, departamento d
+	where d.dcodigo = e.cdep
+	group by d.dnome
+	having avg(e.salario) >= all(
+					select avg(e.salario)
+					from empregado e
+					group by (cdep)
+					)
+
+3. Recuperar para cada departamento: o seu nome, o nome do seu gerente, a quantidade de empregados, a quantidade de projetos do departamento e a quantidade de unidades do departamento. 
+select e1.enome as Gerente,
+	       d.dnome as departamento,
+	       count(distinct e2.CPF)    as num_funcionarios,
+	       count(distinct p.pcodigo) as num_projeto,
+	       count(distinct u)         as unidades
+
+	from empregado e1,
+	     departamento d,
+	     empregado e2,
+	     projeto p,
+	     dunidade u
+	
+	where e1.CPF   = d.gerente
+	  and e2.cdep  = d.codigo
+	  and p.cdep   = d.codigo
+	  and u.dcodigo = d.codigo
+
+	group by (e1.enome, d.dnome)
+
+
+
+4. Recuperar o nome do projeto que consome o maior número de horas. 
+select p.pnome
+from projeto p, tarefa t
+where p.pcodigo = t.pcodigo
+	group by (p.pnome)
+	having sum(t.horas) >= all(
+				select sum(t.horas)
+				from tarefa t
+				group by (t.pcodigo)
+				)
+5. Recuperar o nome do projeto mais caro. 
+select p.pnome
+	from tarefa t, 
+	     projeto p,
+	     (select e.CPF, e.salário/40 as sal_hora
+	      from empregado e) as sal
+						 
+	where  p.pcodigo = t.pcodigo and t.CPF = sal.CPF
+	group by (p.pnome)
+	having (sum(t.horas*sal.sal_hora)) >= all(
+						select sum(t.horas*sal.sal_hora)
+						from tarefa t,
+						     (select e.CPF, e.salário/40 as sal_hora
+						      from empregado e) as sal
+						where  t.CPF = sal.CPF
+						group by (t.pcodigo)
+						)
+6. Recuperar o nome dos gerentes com sobrenome ‘Silva’. 
+select e.enome 
+	from departamento d, empregado e
+	where d.gerente = e.CPF and e.enome like '%Silva%'
+
+7. Recupere o nome dos gerentes que estão alocados em algum projeto (ou seja, possuem “alguma” tarefa em “algum” projeto). 
+select d.gerente
+	from departamento d
+	where d.gerente in (
+			    select distinct t.CPF
+			    from tarefa t
+			    )
+8. Recuperar o nome dos empregados que participam de projetos que não são gerenciados pelo seu departamento. 
+select e.enome
+	from empregado e,
+	 	(
+	 	select t.CPF, p.cdep
+	 	from tarefa t, projeto p
+	 	where t.pcodigo = p.pcodigo
+	 	except
+	 	select e.CPF, e.cdep
+ 		from empregado e
+		 ) as ct
+	where ct.cpf = e.cpf
+
+9. Recuperar o nome dos empregados que participam de todos os projetos. 
+select distinct E.enome
+from empregado E, Projeto P
+where P.cdep=E.cdep
+
+10. Recuperar para cada funcionário (empregado): o seu nome, o seu salário e o nome do seu departamento. O resultado deve estar em ordem decrescente de salário. Mostrar os empregados sem departamento e os departamentos sem empregados. 
+select e.enome, e.salário, d.dnome
+	from empregado e, departamento d
+	where e.cdep = d.codigo
+	order by (salário) desc
+
+11. Recuperar para cada funcionário (empregado): o seu nome, o nome do seu chefe e o nome do gerente do seu departamento. 
+select e1.enome, e2.enome, e3.enome
+	from empregado e1, 
+	     empregado e2, 
+	     empregado e3,
+	     departamento d
+
+	where e2.CPF = e1.chefe 
+  	  and d.codigo = e1.cdep 
+ 	  and e3.CPF = d.gerente
+
+12. Listar nome dos departamentos com média salarial maior que a média salarial da empresa. 
+select d.dnome
+	from departamento d, empregado e
+	where d.codigo = e.cdep
+	group by (d.dnome)
+	having avg(e.salário) > (
+				select avg(e.salário)
+				from empregado e
+				)
+
+13. Listar todos os empregados que possuem salário maior que a média salarial de seus departamentos. 
+select e.enome, e.salário, ct.media_dep
+	from empregado e, (
+			select d.codigo, avg(e.salário) as media_dep
+			from departamento d, empregado e
+			where d.codigo = e.cdep
+			group by (d.codigo)
+			) as ct
+
+	where ct.codigo = e.cdep and e.salário > ct.media_dep
+
+
+14. Listar os empregados lotados nos departamentos localizados em “Fortaleza”. 
+select e.enome, d.dnome, u.dcidade
+	from empregado e, departamento d, dunidade u
+	where e.cdep = d.codigo and d.codigo = u.dcodigo and u.dcidade = 'Fortaleza'
+
+15. Listar nome de departamentos com empregados ganhando duas vezes mais que a média do departamento. 
+select DISTINCT d.dnome 
+from departamento d, empregado e,
+     (select Cdep, avg(salário) as media
+      from Empregado
+				group by Cdep) as tab
+where d.codigo = e.cdep and e.cdep = tab.cdep
+             and e.salário > 2*tab.media
+
+16. Recuperar o nome dos empregados com salário entre R$ 700 e R$ 2800. 
+select E.enome, E.salário
+from Empregado E
+where E.salário>700 and E.salário<2800
+
+select E.enome, E.salário
+from Empregado E
+where E.salário between 700 and 2800
